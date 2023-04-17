@@ -4,6 +4,7 @@
 
 - Hugo CIEPLUCHA
 - Faustine CHARRIER
+- Support : Mohamed YAICH
 
 ## TACHES
 
