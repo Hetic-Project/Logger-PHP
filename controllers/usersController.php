@@ -28,15 +28,25 @@ class Users {
         echo json_encode($users);
     }
 
-    function createUser($username, $password, $role) {
+    function createUser() {
          //Connecter la BDD
         $db = new Database();
         // Ouverture de la connection
         $connection = $db->getConnection();
+        // je récupère le json qui contient les infos de mon nouvel utilisateur
+        $userInfos_json = filter_input(INPUT_POST, 'userInfos');
+        // j'unpack le json
+        $userInfos = json_decode($userInfos_json);
+        if($userInfos) {
+            header('HTTP/1.1 200 OK');
+            $request = $connection->prepare("INSERT INTO user (username, password, role) VALUES ($userInfos['username'], $userInfos['password'], $userInfos['role'])");
+            $request->execute();
+        } else {
+            header('HTTP/1.1 400 Bad Request');
+        }
         // Requêtes SQL
-        $request = $connection->prepare("INSERT INTO user (username, password, role) VALUES ($username, $password, $role)");
-        $request->execute();
         
+
         // Fermeture de la connection
         $connection = null;
     }
