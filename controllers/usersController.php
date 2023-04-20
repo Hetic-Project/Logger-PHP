@@ -27,4 +27,17 @@ class Users {
         header('Content-Type: application/json');
         echo json_encode($users);
     }
+
+    function createUser($username, $password, $role) {
+         //Connecter la BDD
+        $db = new Database();
+        // Ouverture de la connection
+        $connection = $db->getConnection();
+        // Requêtes SQL
+        $request = $connection->prepare("INSERT INTO user (username, password, role) VALUES ($username, $password, $role)");
+        $request->execute();
+        
+        // Fermeture de la connection
+        $connection = null;
+    }
 }

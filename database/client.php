@@ -6,9 +6,9 @@ class Database {
         
         // variables de connection a la bdd
         $host = "localhost";
-        $dbname = "php";
-        $username = "php";
-        $password = "php";
+        $dbname = "db_login";
+        $username = "root";
+        $password = "";
         $port = 3306;
 
         $connection = null;
