@@ -43,7 +43,11 @@ switch($url){
             header('HTTP/1.1 405 Method Not Allowed');
             header('Allow: POST')
         }
-
+        break;
+    case '/login':
+        break;
+        case '/logout':
+        break;
     default:
         // si aucune route ne correspond j'envoi une erreur
         header('HTTP/1.1 404 Not Found');
