@@ -5,7 +5,7 @@ require_once './controllers/usersController.php';
 
 // récupérer la méthode et l'URL de la requête
 $method = $_SERVER['REQUEST_METHOD'];
-$url = $_SERVER['REQUEST_URI'];
+$url = $_SERVER['REQUEST_URL'];
 
 //Router
 switch($url){
@@ -37,6 +37,8 @@ switch($url){
         break;
     case '/login':
         if($method == 'POST') {
+            // j'utilise la méthode connectUser() de la class Users
+            $controller->connectUser();
         } else {
             //  en cas de méthode url inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
