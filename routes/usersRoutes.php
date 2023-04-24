@@ -32,7 +32,7 @@ switch($url){
         } else {
             //  en cas de méthode url inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
-            header('Allow: POST')
+            header('Allow: POST');
         }
         break;
     case '/login':
@@ -42,15 +42,16 @@ switch($url){
         } else {
             //  en cas de méthode url inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
-            header('Allow: POST')
+            header('Allow: POST');
         }
         break;
     case '/logout':
-        if($method == 'POST') {
+        if($method == 'GET') {
+            $controller->disconnectUser();
         } else {
             //  en cas de méthode url inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
-            header('Allow: POST')
+            header('Allow: GET');
         }
         break;
     default:

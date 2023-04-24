@@ -92,21 +92,43 @@ class Users {
         $connection = null;
     }
 
-    }
+    function disconnectUser(){
 
-    function deconnectUser(){
         //Connecter la BDD
         $db = new Database();
         // Ouverture de la connection
         $connection = $db->getConnection();
+        // je récupère le token de la session
+        $sessionToken_json = filter_input(INPUT_POST, 'sessionToken');
+        // j'unpack le json
+        $sessionToken = json_decode($sessionToken_json);
+        // $session token passe de tableau associatif contenant le token au token
+        $sessionToken = $sessionToken['token'];
+        if ($sessionToken) {
+            // requête pour vérifier si le token correspond à l'utilisateur
+            $request->prepare("SELECT id FROM user WHERE  username = $_SESSION['username']");
+            $request->execute();
+            $currentUserID = $request->fetchAll(PDO::FETCH_ASSOC);
+            // requête pour vérifier si le token correspond à l'utilisateur
+            $request->prepare("SELECT token FROM session WHERE user_id = $currentUserID");
+            $request->execute();
+            $currentToken = $request->fetchAll(PDO::FETCH_ASSOC);
+            if ($currentToken == $sessionToken) {
+            // Supprime toutes les variables de session
+                $_SESSION = array();
+                // Détruire la session
+                session_destroy();
 
-        session_start();
-        // Supprime toutes les variables de session
-        $_SESSION = array();
-        // Détruire la session
-        session_destroy();
-
-        $request = $connection->prepare(" DELETE FROM session WHERE token =  ")
+                // requêtes SQL pour supprimer la session de la db
+                $request = $connection->prepare(" DELETE FROM session WHERE token = $sessionToken")
+                $request->execute();
+                header('HTTP/1.1 200 OK');
+            } else {
+                header('HTTP/1.1 401 Unauthorized');
+            }
+        } else {
+            header('HTTP/1.1 400 Bad Request');
+        }
 
         // Fermeture de la connection
         $connection = null;
