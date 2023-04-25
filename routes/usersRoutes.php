@@ -5,7 +5,7 @@ require_once './controllers/usersController.php';
 
 // récupérer la méthode et l'URL de la requête
 $method = $_SERVER['REQUEST_METHOD'];
-$url = $_SERVER['REQUEST_URL'];
+$url = $_SERVER['REQUEST_URI'];
 
 //Router
 switch($url){
@@ -30,7 +30,7 @@ switch($url){
             // j'utilise la méthode createUser() de la class Users
                 $controller->createUser();
         } else {
-            //  en cas de méthode url inconnue j'envoie une erreur
+            //  en cas de méthode uri inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
             header('Allow: POST');
         }
@@ -40,7 +40,7 @@ switch($url){
             // j'utilise la méthode connectUser() de la class Users
             $controller->connectUser();
         } else {
-            //  en cas de méthode url inconnue j'envoie une erreur
+            //  en cas de méthode uri inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
             header('Allow: POST');
         }
@@ -49,7 +49,7 @@ switch($url){
         if($method == 'GET') {
             $controller->disconnectUser();
         } else {
-            //  en cas de méthode url inconnue j'envoie une erreur
+            //  en cas de méthode uri inconnue j'envoie une erreur
             header('HTTP/1.1 405 Method Not Allowed');
             header('Allow: GET');
         }
