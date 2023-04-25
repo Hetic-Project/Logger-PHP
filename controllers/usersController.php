@@ -52,7 +52,7 @@ class Users {
             header('HTTP/1.1 200 OK');
             // Requêtes SQL
             $request = $connection->prepare("INSERT INTO user (username, password, role) VALUES (:username, :password, :role)");
-            $request->execute([":username => $userInfos['username'], :password => $userInfos['password'], :role => $userInfos['role']"]);
+            $request->execute([":username" => $userInfos['username'], ":password" => $userInfos['password'], ":role" => $userInfos['role']]);
         } else {
             header('HTTP/1.1 400 Bad Request');
         }
@@ -78,7 +78,7 @@ class Users {
             if($currentUser) {
                 $newToken = generateToken();
                 $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
-                $request->execute([" :currentUserID => $currentUser['id'], :token => $newToken"]);
+                $request->execute([" :currentUserID" => $currentUser['id'], ":token" => $newToken]);
                 session_start();
                 $_SESSION['username'] = $userInfos['username'];
                 header('HTTP/1.1 200 OK');
@@ -107,11 +107,11 @@ class Users {
         if ($sessionToken) {
             // requête pour vérifier si le token correspond à l'utilisateur
             $request->prepare("SELECT id FROM user WHERE  username = :username");
-            $request->execute([":username => $_SESSION['username']"]);
+            $request->execute([":username" => $_SESSION['username']]);
             $currentUserID = $request->fetchAll(PDO::FETCH_ASSOC);
             // requête pour vérifier si le token correspond à l'utilisateur
             $request->prepare("SELECT token FROM session WHERE user_id = :currentUserID");
-            $request->execute([":currentUserID => $currentUserID"]);
+            $request->execute([":currentUserID" => $currentUserID]);
             $currentToken = $request->fetchAll(PDO::FETCH_ASSOC);
             if ($currentToken == $sessionToken) {
             // Supprime toutes les variables de session
@@ -121,7 +121,7 @@ class Users {
 
                 // requêtes SQL pour supprimer la session de la db
                 $request = $connection->prepare(" DELETE FROM session WHERE token = :sessionToken")
-                $request->execute([":sessionToken => $sessionToken"]);
+                $request->execute([":sessionToken" => $sessionToken]);
                 header('HTTP/1.1 200 OK');
             } else {
                 header('HTTP/1.1 401 Unauthorized');
@@ -134,3 +134,4 @@ class Users {
         $connection = null;
     }
 }
+?>
