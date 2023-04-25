@@ -27,7 +27,7 @@ class Users {
         // Ouverture de la connection
         $connection = $db->getConnection();
         // Requêtes SQL
-        $request = $connection->prepare("SELECT * FROM login");
+        $request = $connection->prepare("SELECT * FROM user");
         $request->execute();
         $users = $request->fetchAll(PDO::FETCH_ASSOC);
 
