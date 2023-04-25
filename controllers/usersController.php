@@ -73,17 +73,18 @@ class Users {
         if($userInfos) {
             // Requêtes SQL
             $request = $connection->prepare("SELECT * FROM user WHERE password = :password");
-            $request->execute([":password => $userinfos['password']"]);
+            $request->execute([":password" => $userinfos['password']]);
             $currentUser = $request->fetchAll(PDO::FETCH_ASSOC);
             if($currentUser) {
                 $newToken = generateToken();
                 $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
-                $request->execute([" :currentUserID" => $currentUser['id'], ":token" => $newToken]);
+                $request->execute([":currentUserID" => $currentUser['id'], ":token" => $newToken]);
                 session_start();
                 $_SESSION['username'] = $userInfos['username'];
                 header('HTTP/1.1 200 OK');
             } else {
-                header('HTTP/1.1 401 Identifiants incorrects')}
+                header('HTTP/1.1 401 Identifiants incorrects');
+            }
         } else {
             header('HTTP/1.1 400 Bad Request');
         }
@@ -120,7 +121,7 @@ class Users {
                 session_destroy();
 
                 // requêtes SQL pour supprimer la session de la db
-                $request = $connection->prepare(" DELETE FROM session WHERE token = :sessionToken")
+                $request = $connection->prepare(" DELETE FROM session WHERE token = :sessionToken");
                 $request->execute([":sessionToken" => $sessionToken]);
                 header('HTTP/1.1 200 OK');
             } else {
