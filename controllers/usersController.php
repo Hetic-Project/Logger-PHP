@@ -66,10 +66,6 @@ class Users {
                 // Requêtes SQL pour ajouter l'utilisateur à la base de données
                 $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
                 $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
-                
-                $request = $connection->prepare("SELECT * FROM user WHERE username = :username");
-                $request->execute([":username" => $username]);
-                $newUser = $request->fetchAll(PDO::FETCH_ASSOC);
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
@@ -94,7 +90,7 @@ class Users {
             $request->execute([":username" => $username]);
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
             if ($userInfos) {
-                if(password_verify($password, $userInfos['password'])) {
+                if(password_verify($password, $userInfos[0]['password'])) {
                     $newToken = generateToken();
                     $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
                     $request->execute([":currentUserID" => $userInfos['id'], ":token" => $newToken]);
