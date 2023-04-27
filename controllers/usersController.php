@@ -93,7 +93,7 @@ class Users {
                 if(password_verify($password, $userInfos[0]['password'])) {
                     $newToken = generateToken();
                     $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
-                    $request->execute([":currentUserID" => $userInfos['id'], ":token" => $newToken]);
+                    $request->execute([":currentUserID" => $userInfos[0]['id'], ":token" => $newToken]);
                     session_start();
                     $_SESSION['username'] = $username;
                     header('HTTP/1.1 200 OK');
