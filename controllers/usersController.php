@@ -121,13 +121,11 @@ class Users {
         $db = new Database();
         // Ouverture de la connection
         $connection = $db->getConnection();
-        // je récupère le token de la session
-        $sessionToken_json = filter_input(INPUT_POST, 'sessionToken');
-        // j'unpack le json
-        $sessionToken = json_decode($sessionToken_json);
-        // $session token passe de tableau associatif contenant le token au token
-        $sessionToken = $sessionToken['token'];
+
+        $sessionToken = $_GET['token'];
+
         if ($sessionToken) {
+            
             // requête pour vérifier si le token correspond à l'utilisateur
             $request->prepare("SELECT id FROM user WHERE  username = :username");
             $request->execute([":username" => $_SESSION['username']]);
