@@ -105,7 +105,7 @@ class Users {
                     header('HTTP/1.1 401 Mot de passe incorrect');
                 }
             } else {
-                header("HTTP/1.1 401 Ce nom d'utilisateur n'existe pas");
+                header("HTTP/1.1 402 Ce nom d'utilisateur n'existe pas");
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
