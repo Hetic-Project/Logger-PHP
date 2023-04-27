@@ -70,10 +70,6 @@ class Users {
                 $request = $connection->prepare("SELECT * FROM user WHERE username = :username");
                 $request->execute([":username" => $username]);
                 $newUser = $request->fetchAll(PDO::FETCH_ASSOC);
-
-                // Envoi des données au format JSON
-                header('Content-Type: application/json');
-                echo json_encode($newUser);
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
@@ -125,7 +121,7 @@ class Users {
         $sessionToken = $_GET['token'];
 
         if ($sessionToken) {
-            
+
             // requête pour vérifier si le token correspond à l'utilisateur
             $request->prepare("SELECT id FROM user WHERE  username = :username");
             $request->execute([":username" => $_SESSION['username']]);
