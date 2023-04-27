@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `role` varchar(12) COLLATE utf8mb3_bin NOT NULL,
   `username` varchar(12) COLLATE utf8mb3_bin NOT NULL,
   `mail` varchar(30) COLLATE utf8mb3_bin NOT NULL,
-  `password` varchar(20) COLLATE utf8mb3_bin NOT NULL,
+  `password` varchar(255) COLLATE utf8mb3_bin NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
   PRIMARY KEY (`id`)

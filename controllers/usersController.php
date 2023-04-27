@@ -45,20 +45,22 @@ class Users {
         // Ouverture de la connection
         $connection = $db->getConnection();
 
-        $body = file_get_contents('php://input');
-        $userInfos = json_decode($body); 
-        // je récupère le json qui contient les infos de mon nouvel utilisateur
-        //$userInfos_json = filter_input(INPUT_POST, 'userInfos');
-        // j'unpack le json
-        //$userInfos = json_decode($userInfos_json);
-        if($userInfos) {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $role = $_POST['role'];
+        $mail = $_POST['mail'];
+
+        if($username && $password && $role && $mail) {
+            // création d'un hash du mot de passe
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
             header('HTTP/1.1 200 OK');
             // Requêtes SQL
             $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
-            $request->execute([":username" => $userInfos->username, ":password" => $userInfos->password, ":role" => $userInfos->role, ":mail" => $userInfos->mail]);
+            $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
             
             $request = $connection->prepare("SELECT * FROM user WHERE username = :username");
-            $request->execute([":username" => $userInfos->username]);
+            $request->execute([":username" => $username]);
             $newUser = $request->fetchAll(PDO::FETCH_ASSOC);
 
             // Envoi des données au format JSON
