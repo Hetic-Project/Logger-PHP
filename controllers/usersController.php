@@ -90,7 +90,7 @@ class Users {
 
         if($username && $password) {
             // Requêtes SQL
-            $request = $connection->prepare("SELECT (id, password) FROM user WHERE username = :username");
+            $request = $connection->prepare("SELECT id, password FROM user WHERE username = :username");
             $request->execute([":username" => $username]);
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
             if(password_verify($password, $userInfos['password'])) {
