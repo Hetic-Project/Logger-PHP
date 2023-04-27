@@ -93,15 +93,19 @@ class Users {
             $request = $connection->prepare("SELECT id, password FROM user WHERE username = :username");
             $request->execute([":username" => $username]);
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
-            if(password_verify($password, $userInfos['password'])) {
-                $newToken = generateToken();
-                $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
-                $request->execute([":currentUserID" => $userInfos['id'], ":token" => $newToken]);
-                session_start();
-                $_SESSION['username'] = $username;
-                header('HTTP/1.1 200 OK');
+            if ($userInfos) {
+                if(password_verify($password, $userInfos['password'])) {
+                    $newToken = generateToken();
+                    $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
+                    $request->execute([":currentUserID" => $userInfos['id'], ":token" => $newToken]);
+                    session_start();
+                    $_SESSION['username'] = $username;
+                    header('HTTP/1.1 200 OK');
+                } else {
+                    header('HTTP/1.1 401 Mot de passe incorrect');
+                }
             } else {
-                header('HTTP/1.1 401 Identifiants incorrects');
+                header("HTTP/1.1 401 Ce nom d'utilisateur n'existe pas");
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
