@@ -45,28 +45,36 @@ class Users {
         // Ouverture de la connection
         $connection = $db->getConnection();
 
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $role = $_POST['role'];
-        $mail = $_POST['mail'];
+        $username = filter_input(INPUT_POST, 'username');
+        $password = filter_input(INPUT_POST, 'password');
+        $role = filter_input(INPUT_POST, 'role');
+        $mail = filter_input(INPUT_POST, 'mail');
 
         if($username && $password && $role && $mail) {
             // création d'un hash du mot de passe
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             header('HTTP/1.1 200 OK');
-            // Requêtes SQL
-            $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
-            $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
-            
-            $request = $connection->prepare("SELECT * FROM user WHERE username = :username");
+            // Requête SQL pour vérifier que l'utilisateur n'existe pas déjà
+            $request = $connection->prepare("SELECT username FROM user WHERE username = :username");
             $request->execute([":username" => $username]);
-            $newUser = $request->fetchAll(PDO::FETCH_ASSOC);
+            $usernameExists = $request->fetchAll(PDO::FETCH_ASSOC);
 
-            // Envoi des données au format JSON
-            header('Content-Type: application/json');
-            echo json_encode($newUser);
+            if ($usernameExists) {
+                header('HTTP/1.1 406 USER ALREADY EXISTS');
+            } else {
+                // Requêtes SQL pour ajouter l'utilisateur à la base de données
+                $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
+                $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
+                
+                $request = $connection->prepare("SELECT * FROM user WHERE username = :username");
+                $request->execute([":username" => $username]);
+                $newUser = $request->fetchAll(PDO::FETCH_ASSOC);
 
+                // Envoi des données au format JSON
+                header('Content-Type: application/json');
+                echo json_encode($newUser);
+            }
         } else {
             header('HTTP/1.1 400 Bad Request');
         }
@@ -81,21 +89,20 @@ class Users {
         // Ouverture de la connection
         $connection = $db->getConnection();
 
-        $userInfos_json = filter_input(INPUT_POST, 'userInfos');
+        $username = filter_input(INPUT_POST, 'username');
+        $password = filter_input(INPUT_POST, 'password');
 
-        // j'unpack le json
-        $userInfos = json_decode($userInfos_json);
-        if($userInfos) {
+        if($username && $password) {
             // Requêtes SQL
-            $request = $connection->prepare("SELECT * FROM user WHERE password = :password");
-            $request->execute([":password" => $userinfos['password']]);
-            $currentUser = $request->fetchAll(PDO::FETCH_ASSOC);
-            if($currentUser) {
+            $request = $connection->prepare("SELECT (id, password) FROM user WHERE username = :username");
+            $request->execute([":username" => $username]);
+            $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
+            if(password_verify($password, $userInfos['password'])) {
                 $newToken = generateToken();
                 $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
-                $request->execute([":currentUserID" => $currentUser['id'], ":token" => $newToken]);
+                $request->execute([":currentUserID" => $userInfos['id'], ":token" => $newToken]);
                 session_start();
-                $_SESSION['username'] = $userInfos['username'];
+                $_SESSION['username'] = $username;
                 header('HTTP/1.1 200 OK');
             } else {
                 header('HTTP/1.1 401 Identifiants incorrects');
