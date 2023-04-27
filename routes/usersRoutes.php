@@ -36,6 +36,8 @@ switch($url){
         }
         break;
     case '/login':
+        // j'utilise la class Users
+        $controller = new Users();
         if($method == 'POST') {
             // j'utilise la méthode connectUser() de la class Users
             $controller->connectUser();
@@ -46,6 +48,8 @@ switch($url){
         }
         break;
     case '/logout':
+        // j'utilise la class Users
+        $controller = new Users();
         if($method == 'GET') {
             $controller->disconnectUser();
         } else {
