@@ -31,8 +31,8 @@ DROP TABLE IF EXISTS `session`;
 CREATE TABLE IF NOT EXISTS `session` (
   `user_id` int NOT NULL,
   `token` varchar(14) COLLATE utf8mb3_bin NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP,
+  `creation_date` date NOT NULL,
+  `expiration_date` date NOT NULL,
   UNIQUE KEY `token` (`token`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(255) COLLATE utf8mb3_bin NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `username` (`username`),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 
 --
