@@ -67,10 +67,10 @@ class Users {
             // Requêtes SQL pour ajouter l'utilisateur à la base de données
             $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
             $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
-            header('Location: http://localhost:3000/login.php');
+            header('Location: http://localhost:3000/pages/login.php');
         } else {
             header('HTTP/1.1 400 Bad Request');
-            header('Location: http://localhost:3000/signIn.php');
+            header('Location: http://localhost:3000/pages/signIn.php');
         }
         
         // Fermeture de la connection
@@ -105,15 +105,15 @@ class Users {
                     header('Location: http://localhost:3000/');
                 } else {
                     header('HTTP/1.1 401 Mot de passe incorrect');
-                    header('Location: http://localhost:3000/login.php');
+                    header('Location: http://localhost:3000/pages/login.php');
                 }
             } else {
                 header("HTTP/1.1 402 Ce nom d'utilisateur n'existe pas");
-                header('Location: http://localhost:3000/login.php');
+                header('Location: http://localhost:3000/pages/login.php');
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
-            header('Location: http://localhost:3000/login.php');
+            header('Location: http://localhost:3000/pages/login.php');
         }
         
         // Fermeture de la connection
@@ -175,12 +175,13 @@ function userVerify() {
             return;
         }
         // requête pour vérifier si le token correspond à l'utilisateur
-        $request->$connection->prepare("SELECT id, role FROM user WHERE  username = :username");
+        $request->$connection->prepare("SELECT id, role, username FROM user WHERE  username = :username");
         $request->execute([":username" => $_SESSION['username']]);
         $currentUser = $request->fetchAll(PDO::FETCH_ASSOC);
 
         $currentUserID = $currentUser[0]['id'];
         $currentUserRole = $currentUser[0]['role'];
+        $currentUserUsername = $currentUser[0]['username'];
 
         // requête pour sortir le token correspondant à l'utilisateur
         $request->$connection->prepare("SELECT token FROM session WHERE  id = :id");
@@ -195,9 +196,16 @@ function userVerify() {
 
         header('HTTP/1.1 200 Ok');
 
+        // rédaction de l'objet renvoyé en json
+        $datasToSend = [];
+        $datasToSend['status'] = "success";
+        $datasToSend['message'] = "";
+        $datasToSend['user'] = [];
+        $datasToSend['user']['id'] = $currentUserID ;
+        $datasToSend['user']['username'] = $currentUserUsername ;
+        $datasToSend['user']['role'] = $currentUserRole ;
 
         header('Content-Type: application/json');
         echo json_encode($datasToSend);
-
 }
 ?>
