@@ -93,7 +93,7 @@ class Users {
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
             if ($userInfos) {
                 if(password_verify($password, $userInfos[0]['password'])) {
-                    $newToken =
+                    $newToken = generateToken();
                     $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
                     $request->execute([":currentUserID" => $userInfos[0]['id'], ":token" => $newToken]);
                     session_start();
@@ -101,6 +101,7 @@ class Users {
                     $_SESSION['id'] = $userInfos[0]['id'];
                     $_SESSION['role'] = $userInfos[0]['role'];
                     $_SESSION['mail'] = $userInfos[0]['mail'];
+                    $_SESSION['token'] = $newToken;
                     header('HTTP/1.1 200 OK');
                     header('Location: http://localhost:3000/');
                 } else {
