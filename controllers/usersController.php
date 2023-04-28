@@ -67,8 +67,10 @@ class Users {
             // Requêtes SQL pour ajouter l'utilisateur à la base de données
             $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
             $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
+            header('Location: http://localhost:3000/login.php');
         } else {
             header('HTTP/1.1 400 Bad Request');
+            header('Location: http://localhost:3000/signIn.php');
         }
         
         // Fermeture de la connection
@@ -97,14 +99,18 @@ class Users {
                     session_start();
                     $_SESSION['username'] = $username;
                     header('HTTP/1.1 200 OK');
+                    header('Location: http://localhost:3000/');
                 } else {
                     header('HTTP/1.1 401 Mot de passe incorrect');
+                    header('Location: http://localhost:3000/login.php');
                 }
             } else {
                 header("HTTP/1.1 402 Ce nom d'utilisateur n'existe pas");
+                header('Location: http://localhost:3000/login.php');
             }
         } else {
             header('HTTP/1.1 400 Bad Request');
+            header('Location: http://localhost:3000/login.php');
         }
         
         // Fermeture de la connection
@@ -146,6 +152,7 @@ class Users {
         } else {
             header('HTTP/1.1 400 Bad Request');
         }
+        header('Location: http://localhost:3000/');
 
         // Fermeture de la connection
         $connection = null;
