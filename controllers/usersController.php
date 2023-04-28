@@ -88,7 +88,7 @@ class Users {
 
         if($username && $password) {
             // Requêtes SQL
-            $request = $connection->prepare("SELECT id, password FROM user WHERE username = :username");
+            $request = $connection->prepare("SELECT id, password, role, mail FROM user WHERE username = :username");
             $request->execute([":username" => $username]);
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
             if ($userInfos) {
@@ -98,6 +98,9 @@ class Users {
                     $request->execute([":currentUserID" => $userInfos[0]['id'], ":token" => $newToken]);
                     session_start();
                     $_SESSION['username'] = $username;
+                    $_SESSION['id'] = $userInfos[0]['id'];
+                    $_SESSION['role'] = $userInfos[0]['role'];
+                    $_SESSION['mail'] = $userInfos[0]['mail'];
                     header('HTTP/1.1 200 OK');
                     header('Location: http://localhost:3000/');
                 } else {
@@ -129,14 +132,14 @@ class Users {
         if ($sessionToken) {
 
             // requête pour vérifier si le token correspond à l'utilisateur
-            $request->prepare("SELECT id FROM user WHERE  username = :username");
+            $request->$connection->prepare("SELECT id FROM user WHERE  username = :username");
             $request->execute([":username" => $_SESSION['username']]);
             $currentUserID = $request->fetchAll(PDO::FETCH_ASSOC);
             // requête pour vérifier si le token correspond à l'utilisateur
             $request->prepare("SELECT token FROM session WHERE user_id = :currentUserID");
             $request->execute([":currentUserID" => $currentUserID]);
             $currentToken = $request->fetchAll(PDO::FETCH_ASSOC);
-            if ($currentToken == $sessionToken) {
+            if ($currentToken[0]['token'] == $sessionToken) {
             // Supprime toutes les variables de session
                 $_SESSION = array();
                 // Détruire la session
@@ -157,5 +160,44 @@ class Users {
         // Fermeture de la connection
         $connection = null;
     }
+}
+
+function userVerify() {
+        //Connecter la BDD
+        $db = new Database();
+        // Ouverture de la connection
+        $connection = $db->getConnection();
+
+        $token = filter_input(INPUT_POST, 'token');
+
+        if(!($token)) {
+            header('HTTP/1.1 400 Bad Request');
+            return;
+        }
+        // requête pour vérifier si le token correspond à l'utilisateur
+        $request->$connection->prepare("SELECT id, role FROM user WHERE  username = :username");
+        $request->execute([":username" => $_SESSION['username']]);
+        $currentUser = $request->fetchAll(PDO::FETCH_ASSOC);
+
+        $currentUserID = $currentUser[0]['id'];
+        $currentUserRole = $currentUser[0]['role'];
+
+        // requête pour sortir le token correspondant à l'utilisateur
+        $request->$connection->prepare("SELECT token FROM session WHERE  id = :id");
+        $request->execute([":id" => $currentUser[0]['id']]);
+        $userToken = $request->fetchAll(PDO::FETCH_ASSOC);
+        $currentUserToken = $userToken[0]['token'];
+
+        if($token != $currentUserToken) {
+            header('HTTP/1.1 401 Unauthorized');
+            return;
+        }
+
+        header('HTTP/1.1 200 Ok');
+
+
+        header('Content-Type: application/json');
+        echo json_encode($datasToSend);
+
 }
 ?>
