@@ -93,7 +93,7 @@ class Users {
             $userInfos = $request->fetchAll(PDO::FETCH_ASSOC);
             if ($userInfos) {
                 if(password_verify($password, $userInfos[0]['password'])) {
-                    $newToken = generateToken();
+                    $newToken =
                     $request = $connection->prepare("INSERT INTO session (user_id, token) VALUES (:currentUserID, :token)");
                     $request->execute([":currentUserID" => $userInfos[0]['id'], ":token" => $newToken]);
                     session_start();
@@ -174,26 +174,27 @@ function userVerify() {
             header('HTTP/1.1 400 Bad Request');
             return;
         }
-        // requête pour vérifier si le token correspond à l'utilisateur
-        $request->$connection->prepare("SELECT id, role, username FROM user WHERE  username = :username");
-        $request->execute([":username" => $_SESSION['username']]);
-        $currentUser = $request->fetchAll(PDO::FETCH_ASSOC);
+        
+        // requête pour récupérer l'id de l'utilisateur qui correspond au token
+        $request->$connection->prepare("SELECT id FROM session WHERE  token = :token");
+        $request->execute([":token" => $token]);
+        $correspondingUser = $request->fetch(PDO::FETCH_ASSOC);
 
-        $currentUserID = $currentUser[0]['id'];
-        $currentUserRole = $currentUser[0]['role'];
-        $currentUserUsername = $currentUser[0]['username'];
-
-        // requête pour sortir le token correspondant à l'utilisateur
-        $request->$connection->prepare("SELECT token FROM session WHERE  id = :id");
-        $request->execute([":id" => $currentUser[0]['id']]);
-        $userToken = $request->fetchAll(PDO::FETCH_ASSOC);
-        $currentUserToken = $userToken[0]['token'];
-
-        if($token != $currentUserToken) {
+        if (!($correspondingUser)) {
             header('HTTP/1.1 401 Unauthorized');
             return;
         }
 
+        // requête pour récupérer le role et l'username de l'utilisateur correspondant
+        $request->$connection->prepare("SELECT role, username FROM user WHERE  id = :id");
+        $request->execute([":id" => $correspondingUser['id']]);
+        $currentUser = $request->fetch(PDO::FETCH_ASSOC);
+
+        $currentUserID = $correspondingUser['id'];
+        $currentUserRole = $currentUser['role'];
+        $currentUserUsername = $currentUser['username'];
+
+        
         header('HTTP/1.1 200 Ok');
 
         // rédaction de l'objet renvoyé en json
