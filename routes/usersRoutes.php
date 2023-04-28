@@ -58,6 +58,17 @@ switch($url){
             header('Allow: GET');
         }
         break;
+    case '/verify':
+        // j'utilise la class Users
+        $controller = new Users();
+        if($method == 'POST') {
+            $controller->verifyUser();
+        } else {
+            //  en cas de méthode uri inconnue j'envoie une erreur
+            header('HTTP/1.1 405 Method Not Allowed');
+            header('Allow: GET');
+        }
+        break;
     default:
         // si aucune route ne correspond j'envoi une erreur
         header('HTTP/1.1 404 Not Found');

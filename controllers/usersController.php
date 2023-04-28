@@ -162,7 +162,7 @@ class Users {
     }
 }
 
-function userVerify() {
+function verifyUser() {
         //Connecter la BDD
         $db = new Database();
         // Ouverture de la connection
@@ -194,7 +194,7 @@ function userVerify() {
         $currentUserRole = $currentUser['role'];
         $currentUserUsername = $currentUser['username'];
 
-        
+
         header('HTTP/1.1 200 Ok');
 
         // rédaction de l'objet renvoyé en json
