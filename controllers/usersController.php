@@ -62,11 +62,11 @@ class Users {
 
             if ($usernameExists) {
                 header('HTTP/1.1 406 USER ALREADY EXISTS');
-            } else {
-                // Requêtes SQL pour ajouter l'utilisateur à la base de données
-                $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
-                $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
+                return ;
             }
+            // Requêtes SQL pour ajouter l'utilisateur à la base de données
+            $request = $connection->prepare("INSERT INTO user (username, password, role, mail) VALUES (:username, :password, :role, :mail)");
+            $request->execute([":username" => $username, ":password" => $hashed_password, ":role" => $role, ":mail" => $mail]);
         } else {
             header('HTTP/1.1 400 Bad Request');
         }
