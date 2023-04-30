@@ -10,6 +10,8 @@ description de l' API
 
 ## Routing de l'API
 
+Base URL de l'API : http://localhost:3030
+
 |  METHODE  |  PATH  |  DESCRIPTION  |
 |  -------  |  ----  |  -----------  |
 |GET|/users/getAllUsers|liste de tous les utilisateurs|
